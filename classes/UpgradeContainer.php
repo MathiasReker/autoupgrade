@@ -63,14 +63,14 @@ class UpgradeContainer
     const PS_VERSION = 'version';
 
     /**
-     * @var Cookie
-     */
-    private $cookie;
-
-    /**
      * @var Db
      */
     public $db;
+
+    /**
+     * @var Cookie
+     */
+    private $cookie;
 
     /**
      * @var FileConfigurationStorage

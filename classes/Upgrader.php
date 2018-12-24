@@ -41,13 +41,6 @@ class Upgrader
     public $rss_channel_link = 'https://api.prestashop.com/xml/channel.xml';
     public $rss_md5file_link_dir = 'https://api.prestashop.com/xml/md5/';
 
-    /**
-     * @var bool contains true if last version is not installed
-     */
-    private $need_upgrade = false;
-    private $changed_files = array();
-    private $missing_files = array();
-
     public $version_name;
     public $version_num;
     public $version_is_modified = null;
@@ -68,6 +61,13 @@ class Upgrader
     public $branch = '';
 
     protected $currentPsVersion;
+
+    /**
+     * @var bool contains true if last version is not installed
+     */
+    private $need_upgrade = false;
+    private $changed_files = array();
+    private $missing_files = array();
 
     public function __construct($version, $autoload = false)
     {
@@ -370,35 +370,6 @@ class Upgrader
         return $this->changed_files;
     }
 
-    /** populate $this->changed_files with $path
-     * in sub arrays  mail, translation and core items.
-     *
-     * @param string $path filepath to add, relative to _PS_ROOT_DIR_
-     */
-    protected function addChangedFile($path)
-    {
-        $this->version_is_modified = true;
-
-        if (strpos($path, 'mails/') !== false) {
-            $this->changed_files['mail'][] = $path;
-        } elseif (strpos($path, '/en.php') !== false || strpos($path, '/fr.php') !== false
-            || strpos($path, '/es.php') !== false || strpos($path, '/it.php') !== false
-            || strpos($path, '/de.php') !== false || strpos($path, 'translations/') !== false) {
-            $this->changed_files['translation'][] = $path;
-        } else {
-            $this->changed_files['core'][] = $path;
-        }
-    }
-
-    /** populate $this->missing_files with $path
-     * @param string $path filepath to add, relative to _PS_ROOT_DIR_
-     */
-    protected function addMissingFile($path)
-    {
-        $this->version_is_modified = true;
-        $this->missing_files[] = $path;
-    }
-
     public function md5FileAsArray($node, $dir = '/')
     {
         $array = array();
@@ -489,6 +460,42 @@ class Upgrader
         return array('deleted' => $deletedFiles, 'modified' => $modifiedFiles);
     }
 
+    public function isAuthenticPrestashopVersion($version = null, $refresh = false)
+    {
+        $this->getChangedFilesList($version, $refresh);
+
+        return !$this->version_is_modified;
+    }
+
+    /** populate $this->changed_files with $path
+     * in sub arrays  mail, translation and core items.
+     *
+     * @param string $path filepath to add, relative to _PS_ROOT_DIR_
+     */
+    protected function addChangedFile($path)
+    {
+        $this->version_is_modified = true;
+
+        if (strpos($path, 'mails/') !== false) {
+            $this->changed_files['mail'][] = $path;
+        } elseif (strpos($path, '/en.php') !== false || strpos($path, '/fr.php') !== false
+            || strpos($path, '/es.php') !== false || strpos($path, '/it.php') !== false
+            || strpos($path, '/de.php') !== false || strpos($path, 'translations/') !== false) {
+            $this->changed_files['translation'][] = $path;
+        } else {
+            $this->changed_files['core'][] = $path;
+        }
+    }
+
+    /** populate $this->missing_files with $path
+     * @param string $path filepath to add, relative to _PS_ROOT_DIR_
+     */
+    protected function addMissingFile($path)
+    {
+        $this->version_is_modified = true;
+        $this->missing_files[] = $path;
+    }
+
     /**
      * Compare the md5sum of the current files with the md5sum of the original.
      *
@@ -530,12 +537,5 @@ class Upgrader
     protected function compareChecksum($filepath, $md5sum)
     {
         return md5_file($filepath) == $md5sum;
-    }
-
-    public function isAuthenticPrestashopVersion($version = null, $refresh = false)
-    {
-        $this->getChangedFilesList($version, $refresh);
-
-        return !$this->version_is_modified;
     }
 }

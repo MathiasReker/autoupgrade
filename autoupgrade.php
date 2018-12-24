@@ -159,6 +159,23 @@ class Autoupgrade extends Module
     }
 
     /**
+     * Adapter for trans calls, existing only on PS 1.7.
+     * Making them available for PS 1.6 as well.
+     *
+     * @param string $id
+     * @param array $parameters
+     * @param string $domain
+     * @param string $locale
+     */
+    public function trans($id, array $parameters = array(), $domain = null, $locale = null)
+    {
+        require_once _PS_ROOT_DIR_ . '/modules/autoupgrade/classes/UpgradeTools/Translator.php';
+
+        $translator = new \PrestaShop\Module\AutoUpgrade\UpgradeTools\Translator(get_class());
+        return $translator->trans($id, $parameters, $domain, $locale);
+    }
+
+    /**
      * Set installation errors and return false.
      *
      * @param string $error Installation abortion reason
@@ -188,22 +205,5 @@ class Autoupgrade extends Module
             @closedir($handle);
             @rmdir($dir);
         }
-    }
-
-    /**
-     * Adapter for trans calls, existing only on PS 1.7.
-     * Making them available for PS 1.6 as well.
-     *
-     * @param string $id
-     * @param array $parameters
-     * @param string $domain
-     * @param string $locale
-     */
-    public function trans($id, array $parameters = array(), $domain = null, $locale = null)
-    {
-        require_once _PS_ROOT_DIR_ . '/modules/autoupgrade/classes/UpgradeTools/Translator.php';
-
-        $translator = new \PrestaShop\Module\AutoUpgrade\UpgradeTools\Translator(get_class());
-        return $translator->trans($id, $parameters, $domain, $locale);
     }
 }

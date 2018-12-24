@@ -89,49 +89,6 @@ class UpgradeFiles extends AbstractTask
     }
 
     /**
-     * list files to upgrade and return it as array
-     * TODO: This method needs probably to be moved in FilesystemAdapter.
-     *
-     * @param string $dir
-     *
-     * @return number of files found
-     */
-    protected function listFilesToUpgrade($dir)
-    {
-        $list = array();
-        if (!is_dir($dir)) {
-            $this->logger->error($this->translator->trans('[ERROR] %s does not exist or is not a directory.', array($dir), 'Modules.Autoupgrade.Admin'));
-            $this->logger->info($this->translator->trans('Nothing has been extracted. It seems the unzipping step has been skipped.', array(), 'Modules.Autoupgrade.Admin'));
-            $this->next = 'error';
-
-            return false;
-        }
-
-        $allFiles = scandir($dir);
-        foreach ($allFiles as $file) {
-            $fullPath = $dir . DIRECTORY_SEPARATOR . $file;
-
-            if ($this->container->getFilesystemAdapter()->isFileSkipped(
-                $file,
-                $fullPath,
-                'upgrade',
-                $this->container->getProperty(UpgradeContainer::LATEST_PATH)
-            )) {
-                if (!in_array($file, array('.', '..'))) {
-                    $this->logger->debug($this->translator->trans('File %s is preserved', array($file), 'Modules.Autoupgrade.Admin'));
-                }
-                continue;
-            }
-            $list[] = str_replace($this->container->getProperty(UpgradeContainer::LATEST_PATH), '', $fullPath);
-            if (is_dir($fullPath) && strpos($dir . DIRECTORY_SEPARATOR . $file, 'install') === false) {
-                $list = array_merge($list, $this->listFilesToUpgrade($fullPath));
-            }
-        }
-
-        return $list;
-    }
-
-    /**
      * upgradeThisFile.
      *
      * @param mixed $file
@@ -216,6 +173,54 @@ class UpgradeFiles extends AbstractTask
         } else {
             return true;
         }
+    }
+
+    public function init()
+    {
+        // Do nothing. Overrides parent init for avoiding core to be loaded here.
+    }
+
+    /**
+     * list files to upgrade and return it as array
+     * TODO: This method needs probably to be moved in FilesystemAdapter.
+     *
+     * @param string $dir
+     *
+     * @return number of files found
+     */
+    protected function listFilesToUpgrade($dir)
+    {
+        $list = array();
+        if (!is_dir($dir)) {
+            $this->logger->error($this->translator->trans('[ERROR] %s does not exist or is not a directory.', array($dir), 'Modules.Autoupgrade.Admin'));
+            $this->logger->info($this->translator->trans('Nothing has been extracted. It seems the unzipping step has been skipped.', array(), 'Modules.Autoupgrade.Admin'));
+            $this->next = 'error';
+
+            return false;
+        }
+
+        $allFiles = scandir($dir);
+        foreach ($allFiles as $file) {
+            $fullPath = $dir . DIRECTORY_SEPARATOR . $file;
+
+            if ($this->container->getFilesystemAdapter()->isFileSkipped(
+                $file,
+                $fullPath,
+                'upgrade',
+                $this->container->getProperty(UpgradeContainer::LATEST_PATH)
+            )) {
+                if (!in_array($file, array('.', '..'))) {
+                    $this->logger->debug($this->translator->trans('File %s is preserved', array($file), 'Modules.Autoupgrade.Admin'));
+                }
+                continue;
+            }
+            $list[] = str_replace($this->container->getProperty(UpgradeContainer::LATEST_PATH), '', $fullPath);
+            if (is_dir($fullPath) && strpos($dir . DIRECTORY_SEPARATOR . $file, 'install') === false) {
+                $list = array_merge($list, $this->listFilesToUpgrade($fullPath));
+            }
+        }
+
+        return $list;
     }
 
     /**
@@ -306,10 +311,5 @@ class UpgradeFiles extends AbstractTask
         $this->stepDone = false;
 
         return true;
-    }
-
-    public function init()
-    {
-        // Do nothing. Overrides parent init for avoiding core to be loaded here.
     }
 }

@@ -107,6 +107,31 @@ abstract class CoreUpgrader
         }
     }
 
+    /**
+     * Add missing levels in version.
+     * Example: 1.7 will become 1.7.0.0.
+     *
+     * @param string $version
+     *
+     * @return string
+     *
+     * @internal public for tests
+     */
+    public function normalizeVersion($version)
+    {
+        $arrayVersion = explode('.', $version);
+        if (count($arrayVersion) < 4) {
+            $arrayVersion = array_pad($arrayVersion, 4, '0');
+        }
+
+        return implode('.', $arrayVersion);
+    }
+
+    public function writeNewSettings()
+    {
+        // Do nothing
+    }
+
     protected function initConstants()
     {
         // Initialize
@@ -196,26 +221,6 @@ abstract class CoreUpgrader
     protected function getPreUpgradeVersion()
     {
         return $this->normalizeVersion(\Configuration::get('PS_VERSION_DB'));
-    }
-
-    /**
-     * Add missing levels in version.
-     * Example: 1.7 will become 1.7.0.0.
-     *
-     * @param string $version
-     *
-     * @return string
-     *
-     * @internal public for tests
-     */
-    public function normalizeVersion($version)
-    {
-        $arrayVersion = explode('.', $version);
-        if (count($arrayVersion) < 4) {
-            $arrayVersion = array_pad($arrayVersion, 4, '0');
-        }
-
-        return implode('.', $arrayVersion);
     }
 
     protected function checkVersionIsNewer($oldVersion)
@@ -421,11 +426,6 @@ abstract class CoreUpgrader
             $this->logger->error('SQL ' . $upgrade_file . ' ' . $error_number . ' in ' . $query . ': ' . $error);
             $this->container->getState()->setWarningExists(true);
         }
-    }
-
-    public function writeNewSettings()
-    {
-        // Do nothing
     }
 
     protected function runRecurrentQueries()

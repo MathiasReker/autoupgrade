@@ -90,16 +90,6 @@ class Cookie
     }
 
     /**
-     * @param string $string
-     *
-     * @return string MD5 hashed string
-     */
-    private function encrypt($string)
-    {
-        return md5(md5($this->readKey()) . md5($string));
-    }
-
-    /**
      * Generate PHP string to be stored in file.
      *
      * @param string $key
@@ -148,5 +138,15 @@ $key = "' . $key . '";
     public function storeKey($key)
     {
         return (bool) file_put_contents($this->keyFilePath, $this->generateKeyFileContent($key));
+    }
+
+    /**
+     * @param string $string
+     *
+     * @return string MD5 hashed string
+     */
+    private function encrypt($string)
+    {
+        return md5(md5($this->readKey()) . md5($string));
     }
 }

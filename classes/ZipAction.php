@@ -34,6 +34,12 @@ use PrestaShop\Module\AutoUpgrade\Parameters\UpgradeConfiguration;
 // ToDo: Fix translations placeholders
 class ZipAction
 {
+
+    /**
+     * if set to true, will use pclZip library
+     * even if ZipArchive is available.
+     */
+    const FORCE_PCLZIP = false;
     // Number of files added in a zip per request
     private $configMaxNbFilesCompressedInARow;
     // Max file size allowed in a zip file
@@ -45,12 +51,6 @@ class ZipAction
      * @var string Path to the shop, in order to remove it from the archived file paths
      */
     private $prodRootDir;
-
-    /**
-     * if set to true, will use pclZip library
-     * even if ZipArchive is available.
-     */
-    const FORCE_PCLZIP = false;
 
     public function __construct($translator, LoggerInterface $logger, UpgradeConfiguration $configuration, $prodRootDir)
     {

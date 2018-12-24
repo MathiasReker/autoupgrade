@@ -35,6 +35,8 @@ class Tools14
     protected static $_forceCompile;
     protected static $_caching;
 
+    private static $_cache_nb_media_servers = null;
+
     /**
      * Random password generator.
      *
@@ -1865,8 +1867,6 @@ class Tools14
         $url = str_replace(_PS_ROOT_DIR_ . '/', __PS_BASE_URI__, $compressed_js_path);
         $js_files = array_merge(array($protocolLink . self::getMediaServer($url) . $url), $js_external_files);
     }
-
-    private static $_cache_nb_media_servers = null;
 
     public static function getMediaServer($filename)
     {

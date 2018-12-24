@@ -68,6 +68,20 @@ class AllUpgradeTasks extends ChainedTasks
     }
 
     /**
+     * Set default config on first run.
+     */
+    public function init()
+    {
+        if ($this->step === self::initialTask) {
+            parent::init();
+            $this->container->getState()->initDefault(
+                $this->container->getUpgrader(),
+                $this->container->getProperty(UpgradeContainer::PS_ROOT_PATH),
+                $this->container->getProperty(UpgradeContainer::PS_VERSION));
+        }
+    }
+
+    /**
      * For some steps, we may require a new request to be made.
      * For instance, in case of obsolete autoloader or loaded classes after a file copy.
      */
@@ -95,19 +109,5 @@ class AllUpgradeTasks extends ChainedTasks
         $this->logger->info('$ ' . implode(' ', $args) . ' --action=' . $response->getNext() . ' --data=' . $this->getEncodedResponse());
 
         return true;
-    }
-
-    /**
-     * Set default config on first run.
-     */
-    public function init()
-    {
-        if ($this->step === self::initialTask) {
-            parent::init();
-            $this->container->getState()->initDefault(
-                $this->container->getUpgrader(),
-                $this->container->getProperty(UpgradeContainer::PS_ROOT_PATH),
-                $this->container->getProperty(UpgradeContainer::PS_VERSION));
-        }
     }
 }

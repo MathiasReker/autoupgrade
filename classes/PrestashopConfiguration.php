@@ -131,19 +131,6 @@ class PrestashopConfiguration
     }
 
     /**
-     * @return array Details of the filesystem permission check
-     */
-    protected function getRootWritableDetails()
-    {
-        $result = array();
-        // Root directory permissions cannot be checked recursively anymore, it takes too much time
-        $result['root_writable'] = ConfigurationTest::test_dir('/', false, $report);
-        $result['root_writable_report'] = $report ? $report : true; // Avoid null in the array as it makes the shop non-compliant
-
-        return $result;
-    }
-
-    /**
      * @param type $content
      *
      * @return bool|string
@@ -158,5 +145,18 @@ class PrestashopConfiguration
         }
 
         return false;
+    }
+
+    /**
+     * @return array Details of the filesystem permission check
+     */
+    protected function getRootWritableDetails()
+    {
+        $result = array();
+        // Root directory permissions cannot be checked recursively anymore, it takes too much time
+        $result['root_writable'] = ConfigurationTest::test_dir('/', false, $report);
+        $result['root_writable_report'] = $report ? $report : true; // Avoid null in the array as it makes the shop non-compliant
+
+        return $result;
     }
 }

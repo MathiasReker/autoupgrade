@@ -239,6 +239,27 @@ class UpgradeSelfCheck
     }
 
     /**
+     * Ask the core to run its tests, if available.
+     *
+     * @return bool
+     */
+    public function runPrestaShopCoreChecks()
+    {
+        if (!class_exists('ConfigurationTest')) {
+            return true;
+        }
+
+        $defaultTests = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
+        foreach ($defaultTests as $testResult) {
+            if ($testResult !== 'ok') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @return bool
      */
     private function checkRootWritable()
@@ -319,26 +340,5 @@ class UpgradeSelfCheck
     private function checkMaxExecutionTime()
     {
         return (int) @ini_get('max_execution_time');
-    }
-
-    /**
-     * Ask the core to run its tests, if available.
-     *
-     * @return bool
-     */
-    public function runPrestaShopCoreChecks()
-    {
-        if (!class_exists('ConfigurationTest')) {
-            return true;
-        }
-
-        $defaultTests = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
-        foreach ($defaultTests as $testResult) {
-            if ($testResult !== 'ok') {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

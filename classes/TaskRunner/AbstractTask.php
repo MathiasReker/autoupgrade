@@ -101,6 +101,13 @@ abstract class AbstractTask
             ->setUpgradeConfiguration($this->container->getUpgradeConfiguration());
     }
 
+    public function init()
+    {
+        $this->container->initPrestaShopCore();
+    }
+
+    abstract public function run();
+
     private function checkTaskMayRun()
     {
         /* PrestaShop demo mode */
@@ -114,11 +121,4 @@ abstract class AbstractTask
             $this->logger->info($this->translator->trans('Action %s skipped', array($currentAction), 'Modules.Autoupgrade.Admin'));
         }
     }
-
-    public function init()
-    {
-        $this->container->initPrestaShopCore();
-    }
-
-    abstract public function run();
 }

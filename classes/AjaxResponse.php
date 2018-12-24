@@ -35,6 +35,12 @@ use PrestaShop\Module\AutoUpgrade\Parameters\UpgradeConfiguration;
  */
 class AjaxResponse
 {
+
+    /**
+     * Request format of the data to return.
+     * Seems to be never modified. Converted as const.
+     */
+    const RESPONSE_FORMAT = 'json';
     /**
      * Used during upgrade.
      *
@@ -60,12 +66,6 @@ class AjaxResponse
      * @var array Params to send (upgrade conf, details on the work to do ...)
      */
     private $nextParams = array();
-
-    /**
-     * Request format of the data to return.
-     * Seems to be never modified. Converted as const.
-     */
-    const RESPONSE_FORMAT = 'json';
 
     /**
      * @var UpgradeConfiguration
